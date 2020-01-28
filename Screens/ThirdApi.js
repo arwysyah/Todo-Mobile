@@ -3,55 +3,157 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
+  TextInput,
   StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native';
-import {WebView} from 'react-native-webview';
+
 import axios from 'axios';
+import {Card ,Button,Icon} from 'native-base'
 import data from './data';
+import { set } from 'react-native-reanimated';
 export default class ThirdApi extends Component {
   constructor() {
     super();
     this.state = {
-      datas: [],
+      jsonData: [],
+      title:'',
+      body:'',
+      isLoading:true
     };
   }
 
-  componentDidMount() {
-    this.setState({
-      datas: data,
-    });
+  async componentDidMount() {
+    await setTimeout(() => {
+      this.setState({isLoading: false});
+    }, 1000);
+    
+    try {
+        await axios.get('http://jsonplaceholder.typicode.com/posts').then((response)=>{
+       this.setState({
+         jsonData:response.data
+       })
 
-    // try {
-    //     axios.get('http://www.appdomain.com/users').then((response)=>{
-    //     console.log(response.json())
+    })
 
-    // })
+    } catch (error) {
+        console.log(error)
 
-    // } catch (error) {
-    //     console.log(error)
+    }
+   
+this.onRefresh()
+   
+  }
+  onRefresh=async()=>{
 
-    // }
+    
+    console.log('hello')
+    axios.get('http://jsonplaceholder.typicode.com/posts').then(result=>{
+      this.setState({
+        partner:result.data.response,
+      
+      })
+    })
+    
+  }
+  submitJson=async()=>{
+    const dataPost ={
+      title:this.state.title,
+      body:this.state.body
+    }
+    console.log(dataPost)
+   
+    await axios.post('http://jsonplaceholder.typicode.com/posts').then((res)=>{
+   console.log(res)
+      ToastAndroid.show('Post Succesfully' ,ToastAndroid.SHORT)
+    })
+ 
   }
 
+
   render() {
-    const {datas} = this.state;
-    console.log(datas);
-    return (
-      <ScrollView>
-        <View style={{alignItems: 'center', top: 40}}>
-          <Text style={styles.boldText}>THIRD API</Text>
+
+    const {jsonData,title,body,isLoading} = this.state;
+    console.log(jsonData);
+    if (isLoading) {
+      return (
+        <View style={{top: 300}}>
+          <ActivityIndicator size="large" color="#00ff00" />
         </View>
-        <View style={styles.experienceView}>
-          {datas.map((part, index) => (
-            <View style={{paddingHorizontal: 20, marginLeft: 20}} key={index}>
-              <Text style={{fontSize: 15, color: '#059dab', marginTop: 15}}>
-                User Id : {part.userId}
-              </Text>
+      );
+    }
+    
+    return (
+      <View style={{flex:1,backgroundColor:'black'}}>
+        <View style={{height:140,alignItems:'center'}}><Text style={styles.boldTexts}>THIRD API</Text></View>
+        <View style={{alignItems: 'center',top:-40}}>
+          <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+            <Text style={{color:'white',justifyContent:'center',left:-30,fontSize:20}}>Title</Text>
+          <TextInput
+              id="title"
+              type="title"
+              value={title}
+              style={{
+                backgroundColor: 'white',
+                width: 210,
+                height: 30,
+                borderRadius: 5,
+                elevation: 3,
+              }}
+              onChangeText={title => this.setState({title})}
+            />
+            
+          </View>
+          <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',top:15}}>
+            <Text style={{color:'white',justifyContent:'center',left:-30,fontSize:18}}>Body</Text>
+          <TextInput
+              id="body"
+              type="body"
+              value={body}
+              style={{
+                backgroundColor: 'white',
+                width: 210,
+                height: 30,
+                borderRadius: 5,
+                elevation: 3,
+              }}
+              onChangeText={body => this.setState({body})}
+            />
+          </View>
+         
+        <Button
+              style={{height: 30,width:60, backgroundColor: 'green',top:30,alignItems:'center'}}
+              onPress={() => {
+               this.submitJson()
+               this.setState({body:'',title:''})
+              }}>
+              <Text style={{textAlign:'center',left:12}}> Post </Text>
+            </Button>
+           <View style={{top:30,left:120}}>
+           <Button
+           style={{
+             backgroundColor:'transparent'
+           }} onPress={() => this.onRefresh()}>
+            
+            <Icon style={{color: 'white'}} name="refresh" />
+      <Text>refresh</Text>
+        </Button>
+           </View>
+        </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        
+        <View style={styles.marger}>
+          {jsonData.map((part, index) => (
+            <Card key={index}> 
+            <View style={{paddingHorizontal: 20, marginLeft: 20,paddingVertical:20}} >
+            
               <Text style={styles.boldText}>{part.title}</Text>
 
               <Text style={styles.commonText}>{part.body}</Text>
             </View>
+            </Card>
           ))}
 
           <View style={{top: 40, paddingLeft: 10, alignItems: 'center'}}>
@@ -64,6 +166,7 @@ export default class ThirdApi extends Component {
           </View>
         </View>
       </ScrollView>
+      </View>
     );
   }
 }
@@ -79,14 +182,20 @@ const styles = StyleSheet.create({
     marginLeft: 300,
     top: 30,
   },
+  boldTexts: {
+    fontSize: 25,
+    top:40,
+    fontWeight: 'bold',
+    color:'grey'
+  },
   boldText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   commonText: {
     fontSize: 18,
   },
-  experienceView: {
+  marger: {
     marginTop: 30,
 
     flexDirection: 'row',
@@ -99,38 +208,17 @@ const styles = StyleSheet.create({
   commonText: {
     fontSize: 16,
   },
-  ViewData1: {
-    shadowColor: 13,
-    borderRadius: 12,
-    height: 240,
-    width: 220,
-    flex: 1,
-  },
-  container: {
-    backgroundColor: 'white',
-    borderRadius: 28,
-    top: 35,
-  },
-  Badge: {
-    backgroundColor: 'white',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
-    width: 145,
-    height: 20,
-  },
-  scroll: {
-    paddingLeft: 20,
-    flexDirection: 'row',
-    height: 300,
-  },
+  
   title: {
-    fontSize: 28,
+    fontSize:25 ,
     marginTop: 5,
     fontWeight: 'bold',
     marginLeft: 25,
     color: 'white',
+  },
+  card: {
+    borderRadius: 5,
+    elevation: 0,
+    borderColor: 'transparent',
   },
 });

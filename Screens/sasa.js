@@ -18,15 +18,9 @@ export default class TodoList extends Component {
   };
 
   async componentDidMount() {
-    const newData = await AsyncStorage.getItem('keya').then(req => 
-   JSON.parse(req)
-      
-    );
-    
     await setTimeout(() => {
-      this.setState({isLoading: false, data: newData});
+      this.setState({isLoading: false, data: this.state.data});
     }, 3000);
-    
   }
 
   handleDelete = async e => {
@@ -37,7 +31,7 @@ export default class TodoList extends Component {
     this.setState({data: array});
 
     try {
-       await AsyncStorage.setItem(
+      let me = await AsyncStorage.setItem(
         'keya',
         JSON.stringify([...this.state.data]),
       );
@@ -50,15 +44,13 @@ export default class TodoList extends Component {
   };
   addTodo = async e => {
     const activity = this.state.inputText;
-if(activity.length>3){
- 
+if(activity.length>4){
+  this.setState({data: [activity, ...this.state.data]});
   try {
-    this.setState({data: [activity, ...this.state.data]});
     await AsyncStorage.setItem(
       'keya',
       JSON.stringify([...this.state.data]),
     );
-    
   } catch (error) {
     console.log(error);
   }
@@ -67,19 +59,23 @@ if(activity.length>3){
   ToastAndroid.show('Add todo Successfully', ToastAndroid.SHORT);
 }
 else{
-  ToastAndroid.show('the characters must be at least 3',ToastAndroid.SHORT)
+  ToastAndroid.show('the characters must be at least 8',ToastAndroid.SHORT)
 }
-  }
   
-  handleCheckBox = (e) => {
-    const item = e.target.name;
-    const isChecked = e.target.checked;
-    this.setState(prevState => ({ data: prevState.checkedItems.set(item, isChecked) }))
+    // this.setState({
+    //   data: this.state.data,
+    // });
+  };
+
+  handleCheckBox = () => {
+    this.setState({
+      isChecked: !this.state.isChecked,
+    });
   };
 
   render() {
-     AsyncStorage.getItem('keya').then(req =>
-      console.log(JSON.parse(req),'asyncstorage'),
+    const datass = AsyncStorage.getItem('keya').then(req =>
+      console.log(JSON.parse(req)),
     );
 
     // console.log('check', this.state.isChecked);
@@ -139,7 +135,7 @@ else{
             <CheckBox
               style={{height: 25, backgroundColor: 'white'}}
               value={this.state.isChecked}
-              onPress={() => this.handleCheckBox()}
+              onChange={() => this.handleCheckBox()}
             />
             <Button
               style={{justifyContent: 'center', backgroundColor: 'green',height:25}}

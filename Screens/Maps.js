@@ -60,10 +60,11 @@ export default class Maps extends React.Component {
       );
     }
     return (
-      <View>
+      <View style={{backgroundColor:'black',flex:1}}>
         <View style={styles.title}>
           <Text style={styles.boldText}>MAPS</Text>
         </View>
+        <View style={{height:80}}></View>
         <View style={{marginHorizontal: 20, top: 40}}>
           <MapView
             style={styles.map}
@@ -102,8 +103,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   boldText: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
+    top:40,
+    color:'grey'
   },
   title: {
     alignItems: 'center',

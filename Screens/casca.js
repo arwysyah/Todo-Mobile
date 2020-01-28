@@ -7,7 +7,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import {Button, Text, Icon, Card, CardItem} from 'native-base';
+import {Button, Text, Icon} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 export default class TodoList extends Component {
   state = {
@@ -18,15 +18,9 @@ export default class TodoList extends Component {
   };
 
   async componentDidMount() {
-    const newData = await AsyncStorage.getItem('keya').then(req => 
-   JSON.parse(req)
-      
-    );
-    
     await setTimeout(() => {
-      this.setState({isLoading: false, data: newData});
-    }, 3000);
-    
+      this.setState({isLoading: false, data: this.state.data});
+    }, 1000);
   }
 
   handleDelete = async e => {
@@ -37,10 +31,11 @@ export default class TodoList extends Component {
     this.setState({data: array});
 
     try {
-       await AsyncStorage.setItem(
+      let me = await AsyncStorage.setItem(
         'keya',
         JSON.stringify([...this.state.data]),
       );
+     
     } catch (error) {
       console.log(error);
     }
@@ -50,36 +45,35 @@ export default class TodoList extends Component {
   };
   addTodo = async e => {
     const activity = this.state.inputText;
-if(activity.length>3){
- 
-  try {
-    this.setState({data: [activity, ...this.state.data]});
-    await AsyncStorage.setItem(
-      'keya',
-      JSON.stringify([...this.state.data]),
-    );
-    
-  } catch (error) {
-    console.log(error);
-  }
- 
 
-  ToastAndroid.show('Add todo Successfully', ToastAndroid.SHORT);
-}
-else{
-  ToastAndroid.show('the characters must be at least 3',ToastAndroid.SHORT)
-}
-  }
+    this.setState({data: [activity,...this.state.data]});
+    try {
+        let me = await AsyncStorage.setItem(
+            'keya',
+            JSON.stringify([...this.state.data]),
+          
+          );
+        //   this.setState({data:this.state.data.reverse()})
+    } catch (error) {
+        console.log(error)
+    }
   
-  handleCheckBox = (e) => {
-    const item = e.target.name;
-    const isChecked = e.target.checked;
-    this.setState(prevState => ({ data: prevState.checkedItems.set(item, isChecked) }))
+
+    ToastAndroid.show('Add todo Successfully', ToastAndroid.SHORT);
+    // this.setState({
+    //   data: this.state.data,
+    // });
+  };
+
+  handleCheckBox = () => {
+    this.setState({
+      isChecked: !this.state.isChecked,
+    });
   };
 
   render() {
-     AsyncStorage.getItem('keya').then(req =>
-      console.log(JSON.parse(req),'asyncstorage'),
+    const datass = AsyncStorage.getItem('keya').then(req =>
+      console.log(JSON.parse(req)),
     );
 
     // console.log('check', this.state.isChecked);
@@ -95,31 +89,22 @@ else{
       );
     }
     return (
-      <View style={{flex: 1, backgroundColor: 'black'}}>
+      <View>
         <View>
           <Text>Sign In</Text>
-          <View style={{height: 100, alignItems: 'center'}}>
-            <Text style={{justifyContent: 'center',color:'grey',fontSize:20,top:30}}>
-              Write Your Activity Here
-            </Text>
-          </View>
+
           <View style={styles.itemsTodo}>
             <TextInput
               id="inputText"
               type="inputText"
               value={inputText}
-              style={{
-                backgroundColor: 'white',
-                width: 210,
-                height: 40,
-                borderRadius: 5,
-                elevation: 3,
-              }}
+              style={{backgroundColor: 'pink', width: 170}}
               onChangeText={inputText => this.setState({inputText})}
             />
 
             <Button
-              style={{height: 40, backgroundColor: 'green'}}
+              primary
+              style={{height: 40}}
               onPress={() => {
                 this.addTodo();
                 this.setState({inputText: ''});
@@ -131,18 +116,17 @@ else{
         <View style={{height: 30, top: 60}}></View>
         {data.map((todo, index) => (
           <View key={index} style={styles.toDo}>
-            <Card style={styles.card}>
-              <CardItem style={styles.cardItem}>
-                <Text>{todo}</Text>
-              </CardItem>
-            </Card>
+            <View style={{width: 200}}>
+              <Text style={{textAlign: 'center', fontSize: 15}}>{todo}</Text>
+            </View>
             <CheckBox
-              style={{height: 25, backgroundColor: 'white'}}
+              style={{height: 20}}
               value={this.state.isChecked}
-              onPress={() => this.handleCheckBox()}
+              onChange={() => this.handleCheckBox()}
             />
             <Button
-              style={{justifyContent: 'center', backgroundColor: 'green',height:25}}
+              style={{justifyContent: 'center'}}
+              primary
               onPress={e => {
                 this.handleDelete(e);
               }}>
@@ -171,18 +155,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-  },
-  card: {
-    borderRadius: 5,
-    elevation: 0,
-    borderColor: 'transparent',
-  },
-  cardItem: {
-    borderRadius: 5,
-    elevation: 3,
-    borderColor: 'transparent',
-    backgroundColor: 'white',
-    width: 180,
-    height: 25,
   },
 });
