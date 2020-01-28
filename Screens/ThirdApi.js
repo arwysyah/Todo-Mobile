@@ -50,7 +50,7 @@ this.onRefresh()
     console.log('hello')
     axios.get('http://jsonplaceholder.typicode.com/posts').then(result=>{
       this.setState({
-        partner:result.data.response,
+        jsonData:result.data.response,
       
       })
     })
