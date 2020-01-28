@@ -18,15 +18,13 @@ export default class TodoList extends Component {
   };
 
   async componentDidMount() {
-    const newData = await AsyncStorage.getItem('keya').then(req => 
-   JSON.parse(req)
-      
+    const newData = await AsyncStorage.getItem('keya').then(req =>
+      JSON.parse(req),
     );
-    
+
     await setTimeout(() => {
       this.setState({isLoading: false, data: newData});
     }, 3000);
-    
   }
 
   handleDelete = async e => {
@@ -37,10 +35,7 @@ export default class TodoList extends Component {
     this.setState({data: array});
 
     try {
-       await AsyncStorage.setItem(
-        'keya',
-        JSON.stringify([...this.state.data]),
-      );
+      await AsyncStorage.setItem('keya', JSON.stringify([...this.state.data]));
     } catch (error) {
       console.log(error);
     }
@@ -50,39 +45,39 @@ export default class TodoList extends Component {
   };
   addTodo = async e => {
     const activity = this.state.inputText;
-if(activity.length>3){
- 
-  try {
-    this.setState({data: [activity, ...this.state.data]});
-    await AsyncStorage.setItem(
-      'keya',
-      JSON.stringify([...this.state.data]),
-    );
-    
-  } catch (error) {
-    console.log(error);
-  }
- 
+    if (activity.length > 3) {
+      try {
+        this.setState({data: [activity, ...this.state.data]});
+        await AsyncStorage.setItem(
+          'keya',
+          JSON.stringify([...this.state.data]),
+        );
+      } catch (error) {
+        console.log(error);
+      }
 
-  ToastAndroid.show('Add todo Successfully', ToastAndroid.SHORT);
-}
-else{
-  ToastAndroid.show('the characters must be at least 3',ToastAndroid.SHORT)
-}
-  }
-  
-  handleCheckBox = (e) => {
+      ToastAndroid.show('Add todo Successfully', ToastAndroid.SHORT);
+    } else {
+      ToastAndroid.show(
+        'the characters must be at least 3',
+        ToastAndroid.SHORT,
+      );
+    }
+  };
+
+  handleCheckBox = e => {
     const item = e.target.name;
     const isChecked = e.target.checked;
-    this.setState(prevState => ({ data: prevState.checkedItems.set(item, isChecked) }))
+    this.setState(prevState => ({
+      data: prevState.checkedItems.set(item, isChecked),
+    }));
   };
 
   render() {
-     AsyncStorage.getItem('keya').then(req =>
-      console.log(JSON.parse(req),'asyncstorage'),
+    AsyncStorage.getItem('keya').then(req =>
+      console.log(JSON.parse(req), 'asyncstorage'),
     );
 
-    // console.log('check', this.state.isChecked);
     // console.log('searc', this.state.inputText);
 
     const {inputText, data, isLoading, isChecked} = this.state;
@@ -99,7 +94,13 @@ else{
         <View>
           <Text>Sign In</Text>
           <View style={{height: 100, alignItems: 'center'}}>
-            <Text style={{justifyContent: 'center',color:'grey',fontSize:20,top:30}}>
+            <Text
+              style={{
+                justifyContent: 'center',
+                color: 'grey',
+                fontSize: 20,
+                top: 30,
+              }}>
               Write Your Activity Here
             </Text>
           </View>
@@ -142,7 +143,11 @@ else{
               onPress={() => this.handleCheckBox()}
             />
             <Button
-              style={{justifyContent: 'center', backgroundColor: 'green',height:25}}
+              style={{
+                justifyContent: 'center',
+                backgroundColor: 'green',
+                height: 25,
+              }}
               onPress={e => {
                 this.handleDelete(e);
               }}>

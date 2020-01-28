@@ -5,15 +5,13 @@ import {
   ScrollView,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
   ToastAndroid
 } from 'react-native';
 
 import axios from 'axios';
 import {Card ,Button,Icon} from 'native-base'
-import data from './data';
-import { set } from 'react-native-reanimated';
+
 export default class ThirdApi extends Component {
   constructor() {
     super();
@@ -76,7 +74,7 @@ this.onRefresh()
   render() {
 
     const {jsonData,title,body,isLoading} = this.state;
-    console.log(jsonData);
+    // console.log(jsonData);
     if (isLoading) {
       return (
         <View style={{top: 300}}>
