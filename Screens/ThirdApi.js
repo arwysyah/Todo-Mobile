@@ -26,7 +26,7 @@ export default class ThirdApi extends Component {
   async componentDidMount() {
     await setTimeout(() => {
       this.setState({isLoading: false});
-    }, 1000);
+    }, 2000);
     
     try {
         await axios.get('http://jsonplaceholder.typicode.com/posts').then((response)=>{
