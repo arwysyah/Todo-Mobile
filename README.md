@@ -28,7 +28,7 @@
  ```
 
  ## Note
- i dont using HTTP because my android device doesnt support
+ i am using HTTP because my android device doesnt support
 if you want to using third api with HTTPS
 change the API
 android>build.gradle
