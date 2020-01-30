@@ -28,12 +28,16 @@ export default class TodoList extends Component {
       this.setState({isLoading: false, data: newData,
      });
     }, 3000)
-    await setInterval( () => {
-      this.setState({
-        date : new Date().toLocaleString()
-      })
-    },1000)
+  
+    this.timeoutId = await setTimeout(this.time.bind(this), 1000)
+    
   }
+
+
+  componentWillUnmount() {
+    clearTimeout(this.timeoutId);
+  }
+
 
   handleDelete = async e => {
     let array = [...this.state.data];
@@ -71,6 +75,9 @@ export default class TodoList extends Component {
         ToastAndroid.SHORT,
       );
     }
+    this.setState({
+      date : new Date().toLocaleString()
+    })
   };
 
   handleCheckBox = e => {
