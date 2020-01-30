@@ -15,16 +15,24 @@ export default class TodoList extends Component {
     data: [],
     isLoading: true,
     isChecked: false,
+    date:''
   };
 
   async componentDidMount() {
+
     const newData = await AsyncStorage.getItem('keya').then(req =>
       JSON.parse(req),
     );
 
     await setTimeout(() => {
-      this.setState({isLoading: false, data: newData});
-    }, 3000);
+      this.setState({isLoading: false, data: newData,
+     });
+    }, 3000)
+    await setInterval( () => {
+      this.setState({
+        date : new Date().toLocaleString()
+      })
+    },1000)
   }
 
   handleDelete = async e => {
@@ -82,7 +90,7 @@ export default class TodoList extends Component {
 
     const {inputText, data, isLoading, isChecked} = this.state;
     // console.log('da', data);
-    if (isLoading) {
+    if (isLoading===true) {
       return (
         <View style={{top: 300}}>
           <ActivityIndicator size="large" color="#00ff00" />
@@ -132,6 +140,7 @@ export default class TodoList extends Component {
         <View style={{height: 30, top: 60}}></View>
         {data.map((todo, index) => (
           <View key={index} style={styles.toDo}>
+ 
             <Card style={styles.card}>
               <CardItem style={styles.cardItem}>
                 <Text>{todo}</Text>
@@ -157,7 +166,11 @@ export default class TodoList extends Component {
                 style={{fontSize: 14, color: 'white'}}
               />
             </Button>
+            <View style={{top:30,left:-220}}>
+            <Text style={{color:"white"}}>{this.state.date}</Text>
+         </View>
           </View>
+          
         ))}
       </View>
     );
