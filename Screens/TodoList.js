@@ -5,17 +5,20 @@ import {
   ActivityIndicator,
   StyleSheet,
   ToastAndroid,
+  TouchableWithoutFeedback
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import {Button, Text, Icon, Card, CardItem} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
+import * as Animatable from 'react-native-animatable';
+
 export default class TodoList extends Component {
   state = {
     inputText: '',
     data: [],
     isLoading: true,
     isChecked: false,
-    date:''
+    date:new Date().toLocaleString()
   };
 
   async componentDidMount() {
@@ -29,14 +32,13 @@ export default class TodoList extends Component {
      });
     }, 3000)
   
-    this.timeoutId = await setTimeout(this.time.bind(this), 1000)
+    
     
   }
 
-
-  componentWillUnmount() {
-    clearTimeout(this.timeoutId);
-  }
+  handleViewRef = ref => this.view = ref;
+  
+  bounce = () => this.view.bounce(800).then(endState => console.log(endState.finished ? 'bounce finished' : 'bounce cancelled'));
 
 
   handleDelete = async e => {
@@ -76,23 +78,26 @@ export default class TodoList extends Component {
       );
     }
     this.setState({
-      date : new Date().toLocaleString()
+      date : this.state.date
     })
   };
 
-  handleCheckBox = e => {
-    const item = e.target.name;
-    const isChecked = e.target.checked;
-    this.setState(prevState => ({
-      data: prevState.checkedItems.set(item, isChecked),
-    }));
+  handleCheckBox = (isChecked) => {
+   
+    this.setState({
+      isChecked:!this.state.isChecked
+    })
+    console.log(this.state.isChecked)
+    this.setState()
+   
   };
 
   render() {
     AsyncStorage.getItem('keya').then(req =>
       console.log(JSON.parse(req), 'asyncstorage'),
     );
-
+    
+    console.log(this.state.isChecked)
     // console.log('searc', this.state.inputText);
 
     const {inputText, data, isLoading, isChecked} = this.state;
@@ -139,9 +144,13 @@ export default class TodoList extends Component {
               onPress={() => {
                 this.addTodo();
                 this.setState({inputText: ''});
+                this.bounce()
               }}>
-              <Text> Add </Text>
-            </Button>
+              <Animatable.View ref={this.handleViewRef}>
+          <Text>Add</Text>
+        </Animatable.View>
+      </Button>
+          
           </View>
         </View>
         <View style={{height: 30, top: 60}}></View>
@@ -155,8 +164,8 @@ export default class TodoList extends Component {
             </Card>
             <CheckBox
               style={{height: 25, backgroundColor: 'white'}}
-              value={this.state.isChecked}
-              onPress={() => this.handleCheckBox()}
+              value={this.state.isChecked  }
+              onChange={() => this.handleCheckBox({...isChecked})}
             />
             <Button
               style={{
@@ -175,6 +184,8 @@ export default class TodoList extends Component {
             </Button>
             <View style={{top:30,left:-220}}>
             <Text style={{color:"white"}}>{this.state.date}</Text>
+          
+       
          </View>
           </View>
           
